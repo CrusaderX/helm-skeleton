@@ -1,0 +1,7 @@
+apiVersion: v2
+version: 0.1.0
+name: foo
+dependencies:
+  - name: default
+    version: 0.1.0
+    repository: file://../../../library

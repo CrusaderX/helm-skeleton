@@ -1,0 +1,6 @@
+default:
+  application:
+    kind: deployment
+    name: baz
+  labels:
+    example.baz.service: baz

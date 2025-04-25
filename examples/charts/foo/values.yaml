@@ -1,0 +1,41 @@
+default:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                  - example
+  application:
+    kind: deployment
+    name: foo
+  labels:
+    example.a.service: foo
+  readinessProbe:
+    failureThreshold: 1
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  services:
+    foo:
+      ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+  tolerations:
+  - effect: NoSchedule
+    key: dedicated
+    operator: Equal
+    value: example

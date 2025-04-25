@@ -1,0 +1,11 @@
+{{- range $name, $object := .Values.default.deployments }}
+{{- if not $object.configMap }} {{- $_ := set $object "configMap" (dict) }} {{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+data:
+  QUEUE_NAME: {{ default "queue-default" $object.configMap.QUEUE_NAME | quote }}
+  QUEUE_BATCH_SIZE: {{ default "100" $object.configMap.QUEUE_BATCH_SIZE | quote }}
+---
+{{- end }}

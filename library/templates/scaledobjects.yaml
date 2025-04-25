@@ -1,0 +1,19 @@
+{{- if not .Values.application.disabled -}}
+{{- range $name, $object := .Values.scaledObjects -}}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  annotations:
+  labels:
+  name: {{ $name }}
+spec:
+  {{- include "template.field" (dict "Name" "cooldownPeriod" "Default" $object.cooldownPeriod "Optional" $.Values.scaledObject.cooldownPeriod) | indent 2 }}
+  {{- include "template.field" (dict "Name" "pollingInterval" "Default" $object.pollingInterval "Optional" $.Values.scaledObject.pollingInterval) | indent 2 }}
+  {{- include "template.field" (dict "Name" "maxReplicaCount" "Default" $object.maxReplicaCount "Optional" $.Values.scaledObject.maxReplicaCount) | indent 2 }}
+  {{- include "template.field" (dict "Name" "minReplicaCount" "Default" $object.minReplicaCount "Optional" $.Values.scaledObject.minReplicaCount) | indent 2 }}
+  {{- include "template.field" (dict "Name" "triggers" "Default" $object.triggers "Optional" $.Values.scaledObject.triggers) | indent 2 }}
+  scaleTargetRef:
+    name: {{ $name }}
+---
+{{- end -}}
+{{- end -}}

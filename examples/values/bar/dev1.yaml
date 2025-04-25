@@ -1,0 +1,29 @@
+default:
+  image:
+    repository: crusaderx2/utils
+    version: latest
+  secrets:
+    bar:
+      type: external
+      dataFrom:
+      - extract:
+          key: dev1/addons/redis
+      - extract:
+          key: dev1/addons/mongo
+  deployments:
+    bar:
+      configMap:
+        LOG_LEVEL: debug
+      containers:
+      - name: bar
+        envFrom:
+        - secretRef:
+            name: bar
+        - configMapRef:
+            name: bar
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 1
+            memory: 512Mi 

@@ -1,0 +1,32 @@
+{{- if not .Values.application.disabled }}
+{{- range $name, $object := .Values.cronJobs }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $name }}
+  annotations: {{- include "template.merge" (dict "Values" $.Values.annotations "Optional" $object.annotations) | nindent 2 }}
+spec:
+  {{- include "template.field" (dict "Name" "concurrencyPolicy" "Default" $object.concurrencyPolicy "Optional" "Forbid") | indent 2 }}
+  {{- include "template.field" (dict "Name" "failedJobsHistoryLimit" "Default" $object.failedJobsHistoryLimit "Optional" 1) | indent 2 }}
+  {{- include "template.field" (dict "Name" "successfulJobsHistoryLimit" "Default" $object.successfulJobsHistoryLimit "Optional" 0) | indent 2 }}
+  schedule: "{{ $object.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- include "template.field" (dict "Name" "serviceAccountName" "Default" $object.serviceAccountName "Optional" $.Values.serviceAccountName)| indent 6 }}
+          {{- include "template.field" (dict "Name" "affinity" "Default" $object.affinity "Optional" $.Values.affinity) | indent 10 }}
+          {{- include "template.field" (dict "Name" "tolerations" "Default" $object.tolerations "Optional" $.Values.tolerations) | indent 10 }}
+          containers:
+          {{- range $_, $container := $object.containers }}
+          - name: {{ $container.name }}
+            image: {{ include "default.image" (dict "Values" $.Values) }}
+            {{- include "template.field" (dict "Name" "imagePullPolicy" "Default" $container.imagePullPolicy "Optional" "") | indent 12 }}
+            {{- include "template.field" (dict "Name" "command" "Default" $container.command "Optional" "" "Type" (list)) | indent 12 }}
+            {{- include "template.field" (dict "Name" "envFrom" "Default" $container.envFrom "Optional" $.Values.envFrom "Type" (list)) | indent 12 }}
+            {{- include "template.field" (dict "Name" "resources" "Default" $container.resources "Optional" $.Values.resources) | indent 12 }}
+          {{- end }}
+          {{- include "template.field" (dict "Name" "restartPolicy" "Default" $object.restartPolicy "Optional" "OnFailure") | indent 10 }}
+---
+{{- end }}
+{{- end }}

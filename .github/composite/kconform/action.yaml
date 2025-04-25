@@ -1,0 +1,16 @@
+inputs:
+  namespace:
+    description: 'namespace to lint'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+    - uses: bmuschko/setup-kubeconform@v1
+    - shell: bash
+      run: |
+        ./tests/main.sh --namespace ${{ inputs.namespace }} --validators kubeconform | tee -a result
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat result >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY

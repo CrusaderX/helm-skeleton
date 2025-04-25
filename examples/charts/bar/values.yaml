@@ -1,0 +1,6 @@
+default:
+  application:
+    kind: deployment
+    name: bar
+  labels:
+    example.bar.service: bar

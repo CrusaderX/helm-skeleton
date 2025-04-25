@@ -1,0 +1,50 @@
+{{- if and (eq .Values.application.kind "scaledJob") (not .Values.application.disabled) -}}
+{{- range $name, $object := .Values.scaledJobs }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: {{ $name }}
+  labels:  {{- include "template.merge" (dict "Values" $.Values.labels "Optional" $object.labels) | nindent 4 }}
+spec:
+  successfulJobsHistoryLimit: {{ default "0" (default $.Values.successfulJobHistoryLimit $object.successfulJobHistoryLimit) }}
+  failedJobsHistoryLimit: {{ default "0" (default $.Values.failedJobsHistoryLimit $object.failedJobsHistoryLimit) }}
+  pollingInterval: {{ default "30" (default $.Values.pollingInterval $object.pollingInterval) }}
+  maxReplicaCount: {{ default "1" (default $.Values.maxReplicaCount $object.maxReplicaCount) }}
+  minReplicaCount: {{ default "0" (default $.Values.minReplicaCount $object.minReplicaCount) }}
+  rollout:
+    strategy: gradual
+  scalingStrategy:
+    strategy: accurate
+  triggers: {{- toYaml $object.triggers | nindent 4 }}
+  jobTargetRef:
+    ttlSecondsAfterFinished: {{ default "60" (default $.Values.ttlSecondsAfterFinished $object.ttlSecondsAfterFinished) }}
+    parallelism: {{ default "1" (default $.Values.parallelism $object.parallelism) }}
+    completions: {{ default "1" (default $.Values.completions $object.completions) }}
+    activeDeadlineSeconds: {{ default "1200" (default $.Values.activeDeadlineSeconds $object.activeDeadlineSeconds) }}
+    backoffLimit: {{ default "0" (default $.Values.backoffLimit $object.backoffLimit) }}
+    template:
+      metadata:
+        labels:  {{- include "template.merge" (dict "Values" $.Values.labels "Optional" $object.labels) | nindent 10 }}
+        annotations:  {{- include "template.merge" (dict "Values" $.Values.annotations "Optional" $object.annotations) | nindent 10 }}
+      spec:
+        terminationGracePeriodSeconds: {{ default "60" (default $.Values.terminationGracePeriodSeconds $object.terminationGracePeriodSeconds) }}
+        {{- include "template.field" (dict "Name" "affinity" "Default" $object.affinity "Optional" $.Values.affinity) | indent 8 }}
+        {{- include "template.field" (dict "Name" "tolerations" "Default" $object.tolerations "Optional" $.Values.tolerations) | indent 8 }}
+        {{- include "template.field" (dict "Name" "schedulerName" "Default" $object.schedulerName "Optional" "default-scheduler") | indent 8 }}
+        {{- include "template.field" (dict "Name" "serviceAccountName" "Default" $object.serviceAccountName "Optional" $.Values.serviceAccountName) | indent 8 }}
+        {{- include "template.field" (dict "Name" "restartPolicy" "Default" $object.restartPolicy "Optional" "Never") | indent 8 }}
+        containers:
+        {{- range $_, $container := $object.containers }}
+          - image: {{ include "default.image" (dict "Values" $.Values) }}
+            name: {{ $container.name }}
+            {{- include "template.field" (dict "Name" "env" "Default" $container.env "Optional" $.Values.env "Type" (list)) | indent 12 }}
+            {{- include "template.field" (dict "Name" "args" "Default" $container.args "Optional" $.Values.args "Type" (list)) | indent 12 }}
+            {{- include "template.field" (dict "Name" "envFrom" "Default" $container.envFrom "Optional" $.Values.envFrom "Type" (list)) | indent 12 }}
+            {{- include "template.field" (dict "Name" "readinessProbe" "Default" $container.readinessProbe "Optional" $.Values.readinessProbe) | indent 12 }}
+            {{- include "template.field" (dict "Name" "resources" "Default" $container.resources "Optional" $.Values.resources ) | indent 12 }}
+            {{- include "template.volumeMounts" (dict "Values" $.Values "Container" $container) | nindent 12 }}
+        {{- end }}
+        {{- include "template.volumes" (dict "Values" $.Values "Object" $object) | nindent 8 }}
+---
+{{- end }}
+{{- end }}

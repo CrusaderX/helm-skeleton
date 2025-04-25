@@ -1,0 +1,19 @@
+{{- if and .Values.services (not .Values.application.disabled) }}
+{{- range $name, $object := .Values.services }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels: {{- include "template.merge" (dict "Values" $.Values.labels "Optional" $object.labels) | nindent 4 }}
+spec:
+  {{- include "template.field" (dict "Name" "type" "Default" $object.type "Optional" "ClusterIP") | indent 2 }}
+  ports:
+  {{- range $_, $p := $object.ports }}
+  - name: {{ $p.name }}
+    port: {{ $p.port }}
+    protocol: {{ default "TCP" $p.protocol }}
+    targetPort: {{ default $p.port $p.targetPort }}
+  {{- end }}
+  {{- include "template.field" (dict "Name" "selector" "Default" $object.selector "Optional" $.Values.labels) | indent 2 }}
+{{- end }}
+{{- end }}

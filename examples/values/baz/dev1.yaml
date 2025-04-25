@@ -1,0 +1,28 @@
+default:
+  image:
+    repository: crusaderx2/utils
+    version: latest
+  serviceAccounts:
+    baz-heavy:
+      annotations:
+        storage: s3
+  deployments:
+    # default
+    baz-default:
+      containers:
+      - name: baz
+        envFrom:
+        - configMapRef:
+            name: baz-default
+
+    # heavy
+    baz-heavy:
+      serviceAccountName: baz-heavy
+      configMap:
+        QUEUE_NAME: queue-heavy
+        QUEUE_BATCH_SIZE: 500
+      containers:
+      - name: baz
+        envFrom:
+        - configMapRef:
+            name: baz-heavy

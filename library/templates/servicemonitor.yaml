@@ -1,0 +1,21 @@
+{{- if and .Values.serviceMonitor .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: prometheus
+  name: {{ .Values.application.name }}
+  namespace: prometheus
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    interval: 3s
+  jobLabel: jobLabel
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "default.selector" . | nindent 6 }}
+{{- end }}

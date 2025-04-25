@@ -1,0 +1,16 @@
+{{- if not .Values.application.disabled }}
+{{- range $name, $object := .Values.hpa }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $name }}
+  minReplicas: {{ $object.minReplicas }}
+  maxReplicas: {{ $object.maxReplicas }}
+  {{- include "template.field" (dict "Name" "metrics" "Default" $object.metrics "Optional" $.Values.metrics "Type" (list)) | indent 2 }}
+{{- end }}
+{{- end }}

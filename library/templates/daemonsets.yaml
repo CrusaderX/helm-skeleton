@@ -1,0 +1,37 @@
+{{- if and (eq .Values.application.kind "daemonset") (not .Values.application.disabled) }}
+{{- range $name, $object := .Values.daemonsets }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ $name }}
+  labels: {{- include "template.merge" (dict "Values" $.Values.labels "Optional" $object.labels) | nindent 4 }}
+  annotations: {{- include "template.merge" (dict "Values" $.Values.annotations "Optional" $object.annotations) | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{- include "template.merge" (dict "Values" $.Values.labels "Optional" $object.labels) | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "template.merge" (dict "Values" $.Values.labels "Optional" $object.labels) | nindent 8 }}
+    spec:
+      {{- include "template.field" (dict "Name" "hostNetwork" "Default" $object.hostNetwork "Optional" $.Values.hostNetwork) | indent 6 }}
+      {{- include "template.field" (dict "Name" "dnsPolicy" "Default" $object.dnsPolicy "Optional" $.Values.dnsPolicy) | indent 6 }}
+      {{- include "template.field" (dict "Name" "serviceAccountName" "Default" $object.serviceAccountName "Optional" $.Values.serviceAccountName) | indent 6 }}
+      {{- include "template.field" (dict "Name" "nodeSelector" "Default" $object.nodeSelector "Optional" $.Values.nodeSelector) | indent 6 }}
+      {{- include "template.field" (dict "Name" "priorityClassName" "Default" $object.priorityClassName "Optional" $.Values.priorityClassName) | indent 6 }}
+      {{- include "template.field" (dict "Name" "affinity" "Default" $object.affinity "Optional" $.Values.affinity) | indent 6 }}
+      {{- include "template.field" (dict "Name" "tolerations" "Default" $object.tolerations "Optional" $.Values.tolerations) | indent 6 }}
+      {{- include "template.field" (dict "Name" "imagePullSecrets" "Default" $object.imagePullSecrets "Optional" $.Values.imagePullSecrets "Type" (list)) | indent 6 }}
+      containers:
+      {{- range $_, $container := $object.containers }}
+        - image: {{ include "default.image" (dict "Values" $.Values) }}
+          name: {{ $container.name }}
+          {{- include "template.field" (dict "Name" "env" "Default" $container.env "Optional" $.Values.env "Type" (list)) | indent 10 }}
+          {{- include "template.field" (dict "Name" "args" "Default" $container.args "Optional" $.Values.args "Type" (list)) | indent 10 }}
+          {{- include "template.field" (dict "Name" "envFrom" "Default" $container.envFrom "Optional" $.Values.envFrom "Type" (list)) | indent 10 }}
+          {{- include "template.field" (dict "Name" "resources" "Default" $container.resources "Optional" $.Values.resources ) | indent 10 }}
+          {{- include "template.volumeMounts" (dict "Values" $.Values "Container" $container) | nindent 10 }}
+      {{- end }}
+      {{- include "template.volumes" (dict "Values" $.Values "Object" $object) | nindent 6 }}
+---
+{{- end }}
+{{- end }}

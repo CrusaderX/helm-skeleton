@@ -1,0 +1,23 @@
+name: ci unit tests
+
+on:
+  push:
+    paths:
+      - 'examples/**'
+      - 'library/**'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        namespace: [dev1, staging]
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/composite/kconform
+        with:
+          namespace: ${{ matrix.namespace }}

@@ -1,0 +1,10 @@
+{{- range $name, $object := .Values.default.deployments }}
+{{- if not $object.configMap }} {{- $_ := set $object "configMap" (dict) }} {{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+data:
+  LOG_LEVEL: {{ default "info" $object.configMap.LOG_LEVEL | quote }}
+---
+{{- end }}
