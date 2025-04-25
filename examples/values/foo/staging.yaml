@@ -4,6 +4,9 @@ default:
     version: latest
   deployments:
     foo:
+      # override existing label key with different value
+      # be aware that this will affect service selector,
+      # so we have to modify it too
       labels:
         example.foo.service: override
       containers:

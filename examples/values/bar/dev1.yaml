@@ -2,6 +2,8 @@ default:
   image:
     repository: crusaderx2/utils
     version: latest
+  # create external-secret from AWS SecretManager secrets dev1/addons/redis and dev1/addons/mongo
+  # these secrets from AWS will be merged into one kubernetes secret with name `bar`
   secrets:
     bar:
       type: external

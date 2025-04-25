@@ -4,3 +4,16 @@ default:
     name: baz
   labels:
     example.baz.service: baz
+  volumeMounts:
+    - mountPath: /mnt/persistance-claim
+      name: persistance-claim
+    - mountPath: /mnt/host-data
+      name: host-data
+  volumes:
+    - hostPath:
+        path: /mnt/host-data
+        type: DirectoryOrCreate
+      name: host-data
+    - name: persistance-claim
+      persistentVolumeClaim:
+        claimName: persistance-claim

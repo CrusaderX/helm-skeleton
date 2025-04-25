@@ -2,10 +2,6 @@ default:
   image:
     repository: crusaderx2/utils
     version: latest
-  serviceAccounts:
-    baz-heavy:
-      annotations:
-        storage: s3
   deployments:
     # default
     baz-default:
@@ -17,9 +13,8 @@ default:
 
     # heavy
     baz-heavy:
-      serviceAccountName: baz-heavy
       configMap:
-        # override configMap defaults for heavy purpose
+        # ovveride configMap defaults for heavy purpose
         QUEUE_NAME: queue-heavy
         QUEUE_BATCH_SIZE: 500
       containers:
@@ -27,3 +22,8 @@ default:
         envFrom:
         - configMapRef:
             name: baz-heavy
+      # override default persistance-claim with another claim
+      volumes:
+        - name: persistance-claim
+          persistentVolumeClaim:
+            claimName: persistance-heavy-claim
