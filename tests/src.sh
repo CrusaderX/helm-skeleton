@@ -74,7 +74,7 @@ function run_validators() {
   for validator in "${validators[@]}"; do
     case "$validator" in
       kubeconform)
-        echo "$output" | kconform -strict -summary -exit-on-error -schema-location default -schema-location ${schema} ;;
+        echo "$output" | kubeconform -strict -summary -exit-on-error -schema-location default -schema-location ${schema} ;;
       kubeval)
         echo "$output" | kubeval --strict ;;
       *)
