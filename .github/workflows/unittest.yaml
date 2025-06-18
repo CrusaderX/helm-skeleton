@@ -5,6 +5,10 @@ on:
     paths:
       - 'examples/**'
       - 'library/**'
+  pull_request:
+    paths:
+      - 'examples/**'
+      - 'library/**'
 
 jobs:
   unittests:

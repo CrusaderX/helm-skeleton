@@ -41,8 +41,13 @@ See `examples` folder.
 
 # Tests
 
-We include a suite of automated validation checks to ensure your rendered Kubernetes YAML is syntactically correct and conforms to your cluster's CRDs and policies. You can easily add any validators you need via `run_validators` function in `tests/src.sh` file.
+Every push or pull-request triggers a full test battery to keep our charts safe and sane:
 
+| Check                            | What it does                                                                                                                             | Where to extend it |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| **YAML & CRD schema validation** | Renders the chart, then lints each manifest to make sure it’s valid Kubernetes and matches the cluster’s CRDs and admission policies.    | —                  |
+| **Custom validators**            | The shell function `run_validators` in `tests/src.sh` is executed automatically. Drop any extra checks you need in there.                | `tests/src.sh`     |
+| **Helm-unittest**                | Runs declarative tests that verify we set/override values correctly and that key fields (labels, probes, PVCs, etc.) render as expected. | `tests/*.yaml`     |
 
 # License
 
