@@ -27,7 +27,7 @@ Adding library locally:
 ```yaml
 dependencies:
   - name: default
-    version: 0.1.0
+    version: 0.1.1
     repository: file://path/to/library
 ```
 
