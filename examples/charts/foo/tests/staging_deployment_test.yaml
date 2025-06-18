@@ -1,3 +1,4 @@
+suite: staging
 values:
   - ../../../values/foo/staging.yaml
 tests:
