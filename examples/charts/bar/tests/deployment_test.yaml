@@ -1,0 +1,29 @@
+templates:
+  - charts/default/templates/deployments.yaml
+values:
+  - ../../../values/bar/dev1.yaml
+tests:
+  - it: validate that labels exist
+    asserts:
+      - equal:
+          path: metadata.name
+          value: bar
+      - equal:
+          path: spec.template.metadata.labels["example.bar.service"]
+          value: bar
+  - it: validate that envFrom exists
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0].secretRef.name
+          value: bar
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[1].configMapRef.name
+          value: bar
+  - it: validate that resource block exists
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 512Mi
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: 512Mi

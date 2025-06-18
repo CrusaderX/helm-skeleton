@@ -1,0 +1,51 @@
+suite: staging
+values:
+  - ../../../values/baz/staging.yaml
+templates:
+  - charts/default/templates/deployments.yaml
+tests:
+  - it: baz-heavy uses an alternate PVC
+    documentIndex: 1
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: persistance-claim
+            persistentVolumeClaim:
+              claimName: persistance-heavy-claim
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: persistance-claim
+            persistentVolumeClaim:
+              claimName: persistance-claim
+  - it: baz-default volumes
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].hostPath.path
+          value: /mnt/host-data
+      - equal:
+          path: spec.template.spec.volumes[0].hostPath.type
+          value: DirectoryOrCreate
+      - equal:
+          path: spec.template.spec.volumes[1].name
+          value: persistance-claim
+      - equal:
+          path: spec.template.spec.volumes[1].persistentVolumeClaim.claimName
+          value: persistance-claim
+  - it: baz-default volumeMounts
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /mnt/host-data
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].name
+          value: host-data
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].mountPath
+          value: /mnt/persistance-claim
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].name
+          value: persistance-claim

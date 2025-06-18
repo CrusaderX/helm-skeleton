@@ -1,0 +1,17 @@
+inputs:
+  chart:
+    description: 'run helm unittest on provided chart'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+    - uses: azure/setup-helm@v4.3.0
+    - shell: bash
+      run: |
+        helm plugin install https://github.com/helm-unittest/helm-unittest.git
+        helm unittest examples/charts/${{ inputs.chart }} | tee -a result
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat result >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY

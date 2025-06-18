@@ -1,0 +1,30 @@
+suite: staging
+values:
+  - ../../../values/baz/staging.yaml
+templates:
+  - configmap.yaml
+tests:
+  - it: baz-heavy uses different configMap values
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: metadata.name
+          value: baz-heavy
+      - equal:
+          path: data.QUEUE_NAME
+          value: queue-heavy
+      - equal:
+          path: data.QUEUE_BATCH_SIZE
+          value: "500"
+  - it: baz-default uses default values
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.name
+          value: baz-default
+      - equal:
+          path: data.QUEUE_NAME
+          value: queue-default
+      - equal:
+          path: data.QUEUE_BATCH_SIZE
+          value: "100"

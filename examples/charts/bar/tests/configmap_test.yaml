@@ -1,0 +1,12 @@
+tests:
+  - it: validate default configMap values
+    values:
+      - ../../../values/bar/dev1.yaml
+    template: configmap.yaml
+    asserts:
+      - equal:
+          path: metadata.name
+          value: bar
+      - equal:
+          path: data.LOG_LEVEL
+          value: debug

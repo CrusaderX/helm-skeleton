@@ -1,0 +1,39 @@
+values:
+  - ../../../values/foo/dev1.yaml
+templates:
+  - charts/default/templates/deployments.yaml
+tests:
+  - it: foo has affinity
+    asserts:
+      - exists:
+          path: spec.template.spec.affinity
+  - it: foo has tolerations
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: dedicated
+            operator: Equal
+            value: example
+            effect: NoSchedule
+  - it: foo has readinessProbe present
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[0].readinessProbe
+  - it: foo har ports
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8080
+  - it: foo has resource section defined and overriden by values file
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[0].resources
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: 512Mi
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 1
+      - notExists:
+          path: spec.template.spec.containers[0].resources.limits.cpu

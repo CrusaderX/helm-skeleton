@@ -1,0 +1,42 @@
+values:
+  - ../../../values/foo/dev1.yaml
+templates:
+  - charts/default/templates/horizontalpodautoscaler.yaml
+tests:
+  - it: foo has hpa enabled
+    asserts:
+      - isKind:
+          of: HorizontalPodAutoscaler
+      - equal:
+          path: metadata.name
+          value: foo
+  - it: foo hpa has min/max replicas
+    asserts:
+      - equal:
+          path: spec.minReplicas
+          value: 1
+      - equal:
+          path: spec.maxReplicas
+          value: 2
+  - it: foo hpa has metrics section
+    asserts:
+      - exists:
+          path: spec.metrics
+      - contains:
+          path: spec.metrics
+          content:
+            type: Resource
+            resource:
+              name: memory
+              target:
+                type: Utilization
+                averageUtilization: 80
+      - contains:
+          path: spec.metrics
+          content:
+            type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 80

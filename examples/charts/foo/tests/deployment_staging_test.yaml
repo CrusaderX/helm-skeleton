@@ -1,0 +1,22 @@
+values:
+  - ../../../values/foo/staging.yaml
+tests:
+  - it: Service exists and has selector example.foo.service=override
+    template: charts/default/templates/service.yaml
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.selector["example.foo.service"]
+          value: override
+  - it: Deployment has matching label and selector
+    template: charts/default/templates/deployments.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.labels["example.foo.service"]
+          value: override
+      - equal:
+          path: spec.selector.matchLabels["example.foo.service"]
+          value: override

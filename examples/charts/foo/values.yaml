@@ -12,7 +12,7 @@ default:
     kind: deployment
     name: foo
   labels:
-    example.a.service: foo
+    example.foo.service: foo
   readinessProbe:
     failureThreshold: 1
     tcpSocket:
