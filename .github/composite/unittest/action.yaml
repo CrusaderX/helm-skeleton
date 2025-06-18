@@ -11,6 +11,7 @@ runs:
     - shell: bash
       run: |
         helm plugin install https://github.com/helm-unittest/helm-unittest.git
+        helm dep build examples/charts/${{ inputs.chart }}
         helm unittest examples/charts/${{ inputs.chart }} | tee -a result
         echo '```' >> $GITHUB_STEP_SUMMARY
         cat result >> $GITHUB_STEP_SUMMARY

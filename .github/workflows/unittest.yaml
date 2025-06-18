@@ -1,4 +1,4 @@
-name: ci helm template & kubeconform tests
+name: ci unit tests
 
 on:
   push:
@@ -7,17 +7,17 @@ on:
       - 'library/**'
 
 jobs:
-  tests:
+  unittests:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
     strategy:
       matrix:
-        namespace: [dev1, staging]
+        chart: [foo, bar, baz]
       fail-fast: true
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/composite/kconform
+      - uses: ./.github/composite/unittest
         with:
-          namespace: ${{ matrix.namespace }}
+          chart: ${{ matrix.chart}}

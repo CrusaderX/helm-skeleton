@@ -1,4 +1,5 @@
 ![tests](https://github.com/CrusaderX/helm-skeleton/actions/workflows/ci.yaml/badge.svg?event=push)
+![unittests](https://github.com/CrusaderX/helm-skeleton/actions/workflows/unittest.yaml/badge.svg?event=push)
 
 # Helm chart library (skeleton)
 
